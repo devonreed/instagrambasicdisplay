@@ -4,8 +4,9 @@ namespace SocialiteProviders\InstagramBasicDisplay;
 
 use SocialiteProviders\Manager\OAuth2\AbstractProvider;
 use SocialiteProviders\Manager\OAuth2\User;
+use Laravel\Socialite\Two\ProviderInterface;
 
-class Provider extends AbstractProvider
+class Provider extends AbstractProvider implements ProviderInterface
 {
     /**
      * Unique Provider Identifier.
@@ -45,22 +46,22 @@ class Provider extends AbstractProvider
      */
     protected function getUserByToken($token)
     {
-        $endpoint = '/users/self';
+        $endpoint = '/me';
         $query = [
+            'fields' => 'id,username',
             'access_token' => $token,
         ];
         $signature = $this->generateSignature($endpoint, $query);
 
         $query['sig'] = $signature;
         $response = $this->getHttpClient()->get(
-            'https://api.instagram.com/v1/users/self', [
+            'https://graph.instagram.com/me', [
             'query'   => $query,
             'headers' => [
                 'Accept' => 'application/json',
             ],
         ]);
-
-        return json_decode($response->getBody()->getContents(), true)['data'];
+        return json_decode($response->getBody()->getContents(), true);
     }
 
     /**
@@ -70,8 +71,8 @@ class Provider extends AbstractProvider
     {
         return (new User())->setRaw($user)->map([
             'id'     => $user['id'], 'nickname' => $user['username'],
-            'name'   => $user['full_name'], 'email' => null,
-            'avatar' => $user['profile_picture'],
+            'name'   => null, 'email' => null,
+            'avatar' => null,
         ]);
     }
 

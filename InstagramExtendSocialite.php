@@ -1,6 +1,6 @@
 <?php
 
-namespace SocialiteProviders\InstagramBasicDisplay;
+namespace SocialiteProviders\Instagram;
 
 use SocialiteProviders\Manager\SocialiteWasCalled;
 
